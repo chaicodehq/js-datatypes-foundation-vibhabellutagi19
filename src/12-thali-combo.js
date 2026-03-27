@@ -53,17 +53,87 @@
  *   // => "RAJASTHANI THALI (Veg) - Items: dal - Rs.250.00"
  */
 export function createThaliDescription(thali) {
-  // Your code here
+  if (typeof thali !== 'object' || thali == null) {
+    return '';
+  }
+
+  const requiredKeys = ['name', 'items', 'price', 'isVeg'];
+
+  const hasAllKeys = requiredKeys.every((key) => key in thali);
+
+  if (!hasAllKeys) return '';
+  const diet = thali.isVeg ? 'Veg' : 'Non-Veg';
+  const itemsSep = thali.items.join(', ');
+  return `${thali.name.toUpperCase()} (${diet}) - Items: ${itemsSep} - Rs.${thali.price.toFixed(2)}`;
 }
 
 export function getThaliStats(thalis) {
-  // Your code here
+  if (!Array.isArray(thalis) || thalis.length === 0) {
+    return null;
+  }
+  const vegCount = thalis.filter((thalis) => thalis.isVeg).length;
+  const nonVegCount = thalis.filter((thalis) => !thalis.isVeg).length;
+  const avgPrice =
+    thalis.reduce((sum, thali) => sum + thali.price, 0) / thalis.length;
+  const cheapest = Math.min(...thalis.map((thali) => thali.price));
+  const costliest = Math.max(...thalis.map((thali) => thali.price));
+  const names = thalis.map((thali) => thali.name);
+  return {
+    totalThalis: thalis.length,
+    vegCount,
+    nonVegCount,
+    avgPrice: avgPrice.toFixed(2),
+    cheapest,
+    costliest,
+    names,
+  };
 }
 
 export function searchThaliMenu(thalis, query) {
-  // Your code here
+  //   3. searchThaliMenu(thalis, query)
+  //  *      - .filter() + .includes() se search karo (case-insensitive)
+  //  *      - Thali match karti hai agar name ya koi bhi item query include kare
+  //  *      - Agar thalis array nahi hai ya query string nahi hai, return []
+  //  *      - Example: searchThaliMenu(thalis, "dal") => thalis with "dal" in name or items
+
+  if (!Array.isArray(thalis) || typeof query !== 'string') {
+    return [];
+  }
+
+  const lowerQuery = query.toLowerCase();
+
+  const result = thalis
+    .filter((thali) => thali.name.toLowerCase().includes(lowerQuery))
+    .concat(
+      thalis.filter((thali) =>
+        thali.items.some((item) => item.includes(lowerQuery)),
+      ),
+    );
+  return result;
 }
 
 export function generateThaliReceipt(customerName, thalis) {
-  // Your code here
+  /**
+   *  4. generateThaliReceipt(customerName, thalis)
+   *      - Template literals + .map() + .join("\n") + .reduce() se receipt banao
+   *      - Format:
+   *        "THALI RECEIPT\n---\nCustomer: {NAME}\n{line items}\n---\nTotal: Rs.{total}\nItems: {count}"
+   *      - Line item: "- {thali name} x Rs.{price}"
+   *      - customerName UPPERCASE mein
+   *      - Agar customerName string nahi hai ya thalis array nahi hai/empty hai, return ""
+   */
+
+  if (
+    typeof customerName !== 'string' ||
+    !Array.isArray(thalis) ||
+    thalis.length === 0
+  ) {
+    return '';
+  }
+  let templateReceipt = `THALI RECEIPT\n---\nCustomer: ${customerName.toUpperCase()}\n`;
+  const lineItems = thalis
+    .map((thali) => `- ${thali.name} x Rs.${thali.price}`)
+    .join('\n');
+  const total = thalis.reduce((sum, thali) => sum + thali.price, 0);
+  return `${templateReceipt}${lineItems}\n---\nTotal: Rs.${total}\nItems: ${thalis.length}`;
 }

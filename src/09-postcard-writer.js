@@ -52,21 +52,65 @@
  *   countVowels("Namaste")     // => 3
  */
 export function writePostcard(sender, receiver, message) {
-  // Your code here
+  const senderCheck =
+    typeof sender !== 'string' || sender.trim() === '' ? '' : sender;
+  const receiverCheck =
+    typeof receiver !== 'string' || receiver.trim() === '' ? '' : receiver;
+  const messageCheck =
+    typeof message !== 'string' || message.trim() === '' ? '' : message;
+
+  if (
+    receiverCheck.length === 0 ||
+    messageCheck.length === 0 ||
+    senderCheck.length === 0
+  ) {
+    return '';
+  }
+
+  return `Priy ${receiver},\n\n${message}\n\nAapka/Aapki,\n${sender}`;
 }
 
 export function isValidPincode(code) {
-  // Your code here
+  if (typeof code !== 'string' || code.startsWith('0') || code.length !== 6) {
+    return false;
+  }
+
+  const regex = new RegExp('^\\d+$');
+  return regex.test(code);
 }
 
 export function formatPostcardField(label, value, width) {
-  // Your code here
+  if (typeof label !== 'string' || typeof value !== 'string') {
+    return '';
+  }
+
+  const widthCheck = typeof width === 'undefined' ? 12 : width;
+  return label.padEnd(widthCheck) + ': ' + value;
 }
 
 export function isFromState(address, stateCode) {
-  // Your code here
+  if (typeof address !== 'string' || typeof stateCode !== 'string') {
+    return false;
+  }
+
+  return address.endsWith(stateCode);
 }
 
 export function countVowels(message) {
-  // Your code here
+  /**
+   *  5. countVowels(message)
+   *      - .match(/[aeiouAEIOU]/g) se saare vowels dhundho
+   *      - Return: count (match result ki length, ya 0 agar null hai)
+   *      - Agar message string nahi hai, return 0
+   *      - Example: countVowels("Namaste India") => 6
+   */
+
+  if (typeof message !== 'string') {
+    return 0;
+  }
+
+  const vowel = message.match(/[aeiouAEIOU]/g);
+  return vowel !== null ? vowel.length : 0;
 }
+
+countVowels('Namaste India');
